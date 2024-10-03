@@ -1,9 +1,10 @@
 from django.urls import path
 from . import views
+from .views import calendario
 
 urlpatterns = [
     path('', views.tracker_view, name='tracker'),
-    path('calendario/', views.calendario_view, name='calendario'),
+    path('calendario/', calendario, name='calendario'),
     path('avaliacao/', views.avaliacao_view, name='avaliacao'),
     path('leitura/', views.leitura_view, name='leitura'),
     path('adulting/', views.atividades_view, name='adulting'),
