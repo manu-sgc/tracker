@@ -1,4 +1,4 @@
-.main-page {
+body {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -13,7 +13,7 @@
     font-family: 'Arial', sans-serif;
 }
 
-.title {
+h1 {
     font-size: 8em;
     text-shadow: 2px 2px 5px rgba(255, 165, 0, 0.8);
     margin: 0;
