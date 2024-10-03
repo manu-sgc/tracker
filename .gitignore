@@ -2,5 +2,5 @@ __pycache__/
 *.py[cod]
 *.sqlite3
 /media/
-/static/
 /venv/
+!static/
