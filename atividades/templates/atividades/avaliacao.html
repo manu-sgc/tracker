@@ -21,10 +21,35 @@
     <div class="day-grid">
         {% for day in dias_do_mes %}
             <div class="day">
-                <button class="day-number" onclick="openModal({{ day }})">{{ day }}</button>
+                <button class="day-number" onclick="openModal(event, {{ day }})">{{ day }}</button>
                 <input type="text" class="day-input" placeholder="">
             </div>
         {% endfor %}
+        <!-- Legenda de Cores -->
+        <div class="legend-container">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #7a2f08;"></div>
+                    <span>1 estrela</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #710100;"></div>
+                    <span>2 estrelas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #c24300;"></div>
+                    <span>3 estrelas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #9b2b05;"></div>
+                    <span>4 estrelas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #f08d0c;"></div>
+                    <span>5 estrelas</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -43,12 +68,14 @@
 
     <script>
         let currentDay = 0;
+        let currentDayElement = null;
 
         function openModal(event, day) {
             currentDay = day;
+            selectedDayBox = event.target.closest('.day');
             const modal = document.getElementById("starModal");
-
             modal.style.display = "block";
+
             const stars = document.querySelectorAll('.star');
             stars.forEach(star => {
                 star.classList.remove('selected'); // Limpa a seleção anterior
@@ -58,6 +85,27 @@
                     for (let i = 0; i < value; i++) {
                         stars[i].classList.add('selected'); // Adiciona classe de seleção
                     }
+                    let color = '';
+                    switch (value) {
+                        case '1':
+                            color = '#7a2f08';       // 1 estrela = marrom
+                            break;
+                        case '2':
+                            color = '#710100';    // 2 estrelas = vermelho queimado
+                            break;
+                        case '3':
+                            color = '#c24300';    // 3 estrelas = laranja
+                            break;
+                        case '4':
+                            color = '#9b2b05'; // 4 estrelas = laranja
+                            break;
+                        case '5':
+                            color = '#f08d0c';     // 5 estrelas = amarelo
+                            break;
+                     }
+                    // Aplica a cor ao botão do dia selecionado
+                    selectedDayBox.style.backgroundColor = color;
+                
                     closeModal();
                 };
             });
