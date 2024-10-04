@@ -45,10 +45,67 @@ h1 {
 
 .day {
     display: flex;
-    align-items: start;
+    align-items: center;
+    justify-content: space-between;
     height: 100%;
-    font-size: 24px;
     border: 1px solid white;
     border-radius: 5px;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.day-number {
+    font-size: 24px;
+    margin-right: 10px;
     color: white;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.day-input {
+    width: 95%;
+    height: 40px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+}
+
+.day-input:focus {
+    outline: none;
+}
+
+.modal {
+    display: none; /* Oculto por padrão */
+    position: fixed; /* Fica fixo na tela */
+    z-index: 1000; /* Fica na frente de outros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largura total */
+    height: 100%; /* Altura total */
+    overflow: auto; /* Permite rolagem se necessário */
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo preto com opacidade */
+}
+
+.modal-content {
+    background-color: #fff; /* Fundo branco */
+    margin: 15% auto; /* Centraliza */
+    padding: 20px; /* Espaçamento interno */
+    border: 1px solid #888; /* Borda cinza */
+    width: 300px; /* Largura do modal */
+    border-radius: 10px; /* Cantos arredondados */
+    text-align: center; /* Centraliza o texto */
+}
+
+.star {
+    font-size: 2rem; /* Tamanho das estrelas */
+    color: #ccc; /* Cor padrão das estrelas */
+    cursor: pointer; /* Cursor em forma de ponteiro */
+}
+
+.star.selected {
+    color: #ff9800; /* Cor das estrelas selecionadas */
 }
