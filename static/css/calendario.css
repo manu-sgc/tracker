@@ -12,6 +12,9 @@ body {
     border-radius: 15px;
     text-align: center;
     box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-header {
@@ -58,27 +61,55 @@ body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr; /* Faz com que as linhas ocupem espaço uniforme */
     gap: 10px;
-}
-
-.calendar-day {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 20px;
-    border-radius: 10px;
-    font-size: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-    color: white;
-}
-
-.calendar-day:hover {
-    background-color: rgba(255, 255, 255, 0.171);
+    flex-grow: 1;
 }
 
 .calendar-day.another-month {
     background-color: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.5);
     opacity: 0.6;
+    font-size: 1.5rem;
+}
+
+.calendar-day {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    position: relative;
+}
+
+.calendar-day textarea {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 10px;
+    padding: 0;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.calendar-day textarea:hover,
+.calendar-day:hover {
+    background-color: rgba(255, 255, 255, 0.123);
+}
+
+.calendar-day textarea:hover {
+    background-color: transparent;
 }
