@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-image: url('/static/folhas.jpeg');
+    overflow: hidden;
+}
+
+.rate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0px !important;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 5rem;
+    color: #ffa500;
+    text-shadow: 5px 5px 8px #ff6600;
+}
+
+.arrow-left, .arrow-right {
+    font-size: 3rem;
+    color: #ffa500;
+    cursor: pointer;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.arrow-left:hover, .arrow-right:hover {
+    color: #ff6600;
+}
+
+.day-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    flex-grow: 1;
+    align-items: start;
+}
+
+.day {
+    display: flex;
+    align-items: start;
+    height: 100%;
+    font-size: 24px;
+    border: 1px solid white;
+    border-radius: 5px;
+    color: white;
+}

@@ -5,17 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliação do Dia</title>
+    <link rel="stylesheet" href="{% static 'css/avaliacao.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <h1>Avaliação do Dia</h1>
-    <div style="display: flex; justify-content: space-between;">
-        <a href="{% url 'calendario' %}" style="font-size: 2em; text-decoration: none;">
+    <div class="rate-header">
+        <a href="{% url 'calendario' %}" class="arrow-left">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <a href="{% url 'adulting' %}" style="font-size: 2em; text-decoration: none;">
+        <h1>Rate my day</h1>
+        <a href="{% url 'adulting' %}" class="arrow-right">
             <i class="fas fa-arrow-right"></i>
         </a>
+    </div>
+    <div class="day-grid">
+        {% for day in dias_do_mes %}
+            <div class="day">{{ day }}</div>
+        {% endfor %}
     </div>
 </body>
 </html>

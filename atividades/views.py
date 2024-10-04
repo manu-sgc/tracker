@@ -1,11 +1,13 @@
 import calendar
 from django.shortcuts import render
 
+
 def tracker_view(request):
     return render(request, 'atividades/tracker.html')
 
 def avaliacao_view(request):
-    return render(request, 'atividades/avaliacao.html')
+    dias_do_mes = list(range(1, 32))  # Cria uma lista de 1 a 31
+    return render(request, 'atividades/avaliacao.html', {'dias_do_mes': dias_do_mes})
 
 def leitura_view(request):
     return render(request, 'atividades/leitura.html')
