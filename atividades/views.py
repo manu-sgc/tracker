@@ -40,14 +40,15 @@ def habitos_view(request):
     positions = []
     for atividade in range(len(atividades)):
         for dia in range(1, 32):
-            x = 50 + (dia - 1) * 35  # Posição x
-            y = 50 + atividade * 35   # Posição y
-            positions.append((x, y, dia, atividade + 1))  # Adiciona a tupla (x, y, dia, atividade)
+            x = 180 + (dia - 1) * 35  # Posição x para os quadrados
+            y = 50 + atividade * 35   # Posição y para a linha da atividade
+            y_atv = y + 15  # Ajuste para a posição y do texto da atividade
+            x_text = 160  # Ajuste para o texto da atividade
+            positions.append((x, y, dia, atividades[atividade], x + 15, y_atv, x_text))  # Passa o texto da atividade
 
     context = {
         'positions': positions,
         'dias': dias,
-        'atividades': atividades,
     }
     
     return render(request, 'atividades/habitos.html', context)

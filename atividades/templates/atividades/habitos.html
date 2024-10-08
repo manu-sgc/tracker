@@ -14,7 +14,7 @@
         <a href="{% url 'avaliacao' %}" class="arrow-left">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <h1>Rate my day</h1>
+        <h1>Hábitos</h1>
         <a href="{% url 'sono' %}" class="arrow-right">
             <i class="fas fa-arrow-right"></i>
         </a>
@@ -22,25 +22,18 @@
 
     <div class="container">
         <div class="habit-tracker">
-            <div class="header">
-                <div class="month-days">
-                    {% for dia in dias %}
-                        <div class="day">{{ dia }}</div>
-                    {% endfor %}
-                </div>
-                <div class="activities">
-                    {% for atividade in atividades %}
-                        <div class="atividade-nome">{{ atividade }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-            <svg id="habitTracker" width="1500" height="350">
-                {% for x, y, dia, atividade in positions %}
+            <svg id="habitTracker" width="1600" height="500">
+                {% for x, y, dia, atividade, x_offset, y_atv, x_text in positions %}
+                <g>
+                    <text x="{{ x_text }}" y="{{ y_atv }}" text-anchor="end" alignment-baseline="middle">{{ atividade }}</text>
+                    <text x="{{ x_offset }}" y="30" text-anchor="middle">{{ dia }}</text>
                     <rect class="cell" x="{{ x }}" y="{{ y }}" width="30" height="30" data-dia="{{ dia }}" data-atividade="{{ atividade }}"></rect>
+                </g>
                 {% endfor %}
-            </svg>
+            </svg>                                                           
         </div>
-    </div>
+    </div>                
+    
 
     <script>
         const cells = document.querySelectorAll('.cell');

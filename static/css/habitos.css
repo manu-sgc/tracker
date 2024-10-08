@@ -35,38 +35,15 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.activities-container {
-    display: flex;
-    flex-direction: column; /* Coloca as atividades em coluna */
-    margin-right: 20px; /* Espaço entre atividades e o habit tracker */
-}
-
-.activities {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.atividade-nome {
-    margin: 5px 0;
+    margin-top: 20px;
+    width: 1800;  /* Ajustar a largura do container */
 }
 
 .habit-tracker {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.month-days {
-    display: flex;
-    justify-content: center; /* Centraliza os dias na parte superior */
-}
-
-.day {
-    width: 35px; /* Largura para alinhar com as células do SVG */
-    text-align: center;
+    position: relative;
 }
 
 .cell { stroke: black; fill: white; }
