@@ -9,3 +9,11 @@ class Dia(models.Model):
     horas_de_sono = models.CharField(max_length=255)
     destaque = models.TextField()
     filmes_series = models.TextField()
+
+class ProgressoHabitual(models.Model):
+    dia = models.IntegerField()
+    atividade = models.CharField(max_length=100)
+    completado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.dia} - {self.atividade} - {"Completado" if self.completado else "Não completado"}'

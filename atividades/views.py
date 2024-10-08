@@ -1,6 +1,17 @@
 import calendar
 from django.shortcuts import render
 
+import numpy as np
+import matplotlib.pyplot as plt
+from django.http import HttpResponse
+from io import BytesIO
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+from .models import ProgressoHabitual
+
 
 def tracker_view(request):
     return render(request, 'atividades/tracker.html')
@@ -34,3 +45,19 @@ def calendario(request):
     cal = calendar.monthcalendar(year, month)
 
     return render(request, 'atividades/calendario.html', {'calendar': cal})
+
+def salvar_progresso(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        dia = data.get('dia')
+        atividade = data.get('atividade')
+        completado = data.get('completado')
+
+        progresso, created = ProgressoHabitual.objects.update_or_create(
+            dia=dia, atividade=atividade,
+            defaults={'completado': completado}
+        )
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
