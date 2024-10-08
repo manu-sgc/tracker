@@ -7,7 +7,6 @@ class Dia(models.Model):
     atividades = models.CharField(max_length=255)
     habitos = models.CharField(max_length=255)
     horas_de_sono = models.CharField(max_length=255)
-    destaque = models.TextField()
     filmes_series = models.TextField()
 
 class ProgressoHabitual(models.Model):

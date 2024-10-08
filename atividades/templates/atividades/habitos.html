@@ -5,11 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hábitos Diários</title>
+    <link rel="stylesheet" href="{% static 'css/habitos.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .cell { stroke: black; fill: white; }
-        .cell.completed { fill: green; }
-    </style>
 </head>
 <body>
     <div class="habit-header">
@@ -21,14 +18,12 @@
             <i class="fas fa-arrow-right"></i>
         </a>
     </div>
-    <svg id="habitTracker" width="500" height="500">
-        <!-- Exemplo de célula (atividades e dias) -->
-        <!-- Aqui você precisa desenhar o gráfico do jeito que você quiser -->
-        <!-- Exemplo simples de células do gráfico -->
-        <rect class="cell" x="50" y="50" width="30" height="30" data-dia="1" data-atividade="1"></rect>
-        <rect class="cell" x="90" y="50" width="30" height="30" data-dia="2" data-atividade="1"></rect>
-        <!-- Continue desenhando as células para os outros dias/atividades -->
-    </svg>
+    <svg id="habitTracker" width="100%" height="350">
+        {% for x, y, dia, atividade in positions %}
+            <rect class="cell" x="{{ x }}" y="{{ y }}" width="30" height="30" data-dia="{{ dia }}" data-atividade="{{ atividade }}"></rect>
+        {% endfor %}
+    </svg> 
+    
 
     <script>
         const cells = document.querySelectorAll('.cell');

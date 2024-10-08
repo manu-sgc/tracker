@@ -27,7 +27,21 @@ def atividades_view(request):
     return render(request, 'atividades/adulting.html')
 
 def habitos_view(request):
-    return render(request, 'atividades/habitos.html')
+    dias = list(range(1, 32))  # Dias de 1 a 31
+    atividades = list(range(1, 9))  # Atividades de 1 a 8
+    positions = []
+
+    for dia in dias:
+        for atividade in atividades:
+            x = 50 + (dia - 1) * 35  # Posição x para cada dia
+            y = 50 + (atividade - 1) * 35  # Posição y para cada atividade
+            positions.append((x, y, dia, atividade))  # Adiciona a tupla (x, y, dia, atividade)
+
+    context = {
+        'positions': positions
+    }
+    
+    return render(request, 'atividades/habitos.html', context)
 
 def sono_view(request):
     return render(request, 'atividades/sono.html')
