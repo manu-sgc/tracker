@@ -1,3 +1,9 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .habit-header {
     display: flex;
     align-items: center;
@@ -23,6 +29,44 @@ h1 {
 
 .arrow-left:hover, .arrow-right:hover {
     color: #ff6600;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.activities-container {
+    display: flex;
+    flex-direction: column; /* Coloca as atividades em coluna */
+    margin-right: 20px; /* Espaço entre atividades e o habit tracker */
+}
+
+.activities {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.atividade-nome {
+    margin: 5px 0;
+}
+
+.habit-tracker {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.month-days {
+    display: flex;
+    justify-content: center; /* Centraliza os dias na parte superior */
+}
+
+.day {
+    width: 35px; /* Largura para alinhar com as células do SVG */
+    text-align: center;
 }
 
 .cell { stroke: black; fill: white; }
