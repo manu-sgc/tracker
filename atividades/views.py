@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import DailyActivity, DailyTaskItem, DailyTaskCompletion, MediaEntry
+from .models import DailyActivity
 from django.http import JsonResponse
 import calendar
 from datetime import date
-from django.db.models import F
 from django.utils import timezone
 
 def select_year(request):
@@ -85,108 +84,3 @@ def save_daily_activity(request):
         
         return JsonResponse({'status': 'success', 'message': 'Humor e comentário salvos com sucesso.', 'mood_rating': mood_rating})
     return JsonResponse({'status': 'error', 'message': 'Método não permitido.'}, status=405)
-
-def daily_tasks_view(request, year, month):
-    selected_date = date(year, month, 1) # Usamos o primeiro dia do mês como referência
-    
-    # Obter todas as tarefas que o usuário definiu (DailyTaskItem)
-    all_tasks = DailyTaskItem.objects.all()
-
-    # Obter as conclusões de tarefas para o MÊS selecionado
-    # { (task_id, day): completion_object } para fácil acesso
-    completed_tasks = {}
-    completions_for_month = DailyTaskCompletion.objects.filter(
-        date__year=year,
-        date__month=month
-    ).select_related('task') # Otimiza a busca do objeto TaskItem
-
-    for completion in completions_for_month:
-        completed_tasks[(completion.task_id, completion.date.day)] = True
-    
-    # Gerar os dias do mês
-    num_days = calendar.monthrange(year, month)[1] # Número de dias no mês
-    days_in_month = [day for day in range(1, num_days + 1)]
-
-    grid_template_columns_str = "200px " + " ".join(["50px"] * num_days)
-
-    if request.method == 'POST':
-        task_id = request.POST.get('task_id')
-        day_to_toggle = int(request.POST.get('day'))
-        
-        task = get_object_or_404(DailyTaskItem, id=task_id)
-        current_date = date(year, month, day_to_toggle)
-
-        # Tentar criar ou deletar a conclusão
-        if (task.id, day_to_toggle) in completed_tasks:
-            # Se já está completa, desmarcar (deletar a entrada)
-            DailyTaskCompletion.objects.filter(task=task, date=current_date).delete()
-        else:
-            # Se não está completa, marcar (criar uma nova entrada)
-            DailyTaskCompletion.objects.create(task=task, date=current_date)
-        
-        # Redirecionar para a mesma página para atualizar o estado
-        return redirect('atividades:daily_tasks', year=year, month=month)
-
-    context = {
-        'year': year,
-        'month': month,
-        'month_name': calendar.month_name[month],
-        'all_tasks': all_tasks,
-        'days_in_month': days_in_month,
-        'completed_tasks': completed_tasks,
-        'current_day': timezone.localdate().day if timezone.localdate().year == year and timezone.localdate().month == month else None
-    }
-    return render(request, 'atividades/daily_tasks.html', context)
-
-# View para adicionar/gerenciar tarefas rastreáveis (DailyTaskItem)
-def manage_tasks(request):
-    if request.method == 'POST':
-        task_name = request.POST.get('task_name').strip()
-        if task_name:
-            # Tentar criar a tarefa, ignorando se já existir (unique=True)
-            DailyTaskItem.objects.get_or_create(name=task_name)
-        return redirect('atividades:manage_tasks')
-    
-    tasks = DailyTaskItem.objects.all()
-    context = {
-        'tasks': tasks
-    }
-    return render(request, 'atividades/manage_tasks.html', context)
-
-# View para deletar uma tarefa rastreável
-def delete_task(request, task_id):
-    task = get_object_or_404(DailyTaskItem, id=task_id)
-    if request.method == 'POST':
-        task.delete()
-    return redirect('atividades:manage_tasks')
-
-def media_list_view(request):
-    if request.method == 'POST':
-        media_type = request.POST.get('media_type')
-        title = request.POST.get('title').strip()
-        notes = request.POST.get('notes', '').strip()
-        rating = request.POST.get('rating')
-
-        if media_type and title:
-            MediaEntry.objects.create(
-                media_type=media_type,
-                title=title,
-                notes=notes,
-                rating=int(rating) if rating else None
-            )
-        return redirect('atividades:media_list')
-
-    media_entries = MediaEntry.objects.all() # Todas as mídias, não por data
-    context = {
-        'media_entries': media_entries,
-        'media_types': MediaEntry.MEDIA_TYPE_CHOICES,
-        'rating_choices': MediaEntry.RATING_CHOICES,
-    }
-    return render(request, 'atividades/media_list.html', context)
-
-# View para deletar uma mídia
-def delete_media(request, media_id):
-    media = get_object_or_404(MediaEntry, id=media_id)
-    if request.method == 'POST':
-        media.delete()
-    return redirect('atividades:media_list')

@@ -63,12 +63,11 @@
     </style>
 </head>
 <body>
+    {% csrf_token %}
     <div class="container">
         <div class="nav-links">
             <a href="{% url 'atividades:select_month' year=year %}" class="btn btn-outline-secondary">&leftarrow; Voltar para Escolha do Mês</a>
             <a href="{% url 'atividades:select_year' %}" class="btn btn-outline-secondary">Voltar para Escolha do Ano &rightarrow;</a>
-            <a href="{% url 'atividades:daily_tasks' year=year month=month %}" class="btn btn-info">Ver Atividades Diárias &rightarrow;</a>
-            <a href="{% url 'atividades:media_list' %}" class="btn btn-warning">Ver Mídias Consumidas &rightarrow;</a>
         </div>
         <h1>{{ month_name }} de {{ year }}</h1>
 
