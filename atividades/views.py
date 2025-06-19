@@ -1,88 +1,89 @@
-import calendar
-from django.shortcuts import render
-
-import numpy as np
-import matplotlib.pyplot as plt
-from django.http import HttpResponse
-from io import BytesIO
-
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import DailyActivity
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+import calendar
+from datetime import date
 
-from .models import ProgressoHabitual
+# 1. Página para escolher o ano
+def select_year(request):
+    years = [2024, 2025, 2026]
+    return render(request, 'atividades/select_year.html', {'years': years})
 
-
-def tracker_view(request):
-    return render(request, 'atividades/tracker.html')
-
-def avaliacao_view(request):
-    dias_do_mes = list(range(1, 32))  # Cria uma lista de 1 a 31
-    return render(request, 'atividades/avaliacao.html', {'dias_do_mes': dias_do_mes})
-
-def leitura_view(request):
-    return render(request, 'atividades/leitura.html')
-
-def atividades_view(request):
-    return render(request, 'atividades/adulting.html')
-
-def habitos_view(request):
-    dias = [i for i in range(1, 32)]  # Dias de 1 a 31
-    atividades = [
-        "Dormir 8h",
-        "Fazer exercício físico",
-        "Alongar",
-        "Comer salada",
-        "Passar fio dental",
-        "Passar hidratante",
+# 2. Página para escolher o mês
+def select_month(request, year):
+    months = [
+        {'id': 1, 'name': 'Janeiro'}, {'id': 2, 'name': 'Fevereiro'},
+        {'id': 3, 'name': 'Março'}, {'id': 4, 'name': 'Abril'},
+        {'id': 5, 'name': 'Maio'}, {'id': 6, 'name': 'Junho'},
+        {'id': 7, 'name': 'Julho'}, {'id': 8, 'name': 'Agosto'},
+        {'id': 9, 'name': 'Setembro'}, {'id': 10, 'name': 'Outubro'},
+        {'id': 11, 'name': 'Novembro'}, {'id': 12, 'name': 'Dezembro'},
     ]
-    
-    positions = []
-    for atividade in range(len(atividades)):
-        for dia in range(1, 32):
-            x = 180 + (dia - 1) * 35  # Posição x para os quadrados
-            y = 50 + atividade * 35   # Posição y para a linha da atividade
-            y_atv = y + 15  # Ajuste para a posição y do texto da atividade
-            x_text = 160  # Ajuste para o texto da atividade
-            positions.append((x, y, dia, atividades[atividade], x + 15, y_atv, x_text))  # Passa o texto da atividade
+    return render(request, 'atividades/select_month.html', {'year': year, 'months': months})
+
+# 3. Página do calendário com marcações
+def calendar_view(request, year, month):
+    cal = calendar.Calendar()
+    month_days = cal.monthdayscalendar(year, month)
+
+    # Obter atividades existentes para o mês/ano
+    atividades = DailyActivity.objects.filter(
+        date__year=year,
+        date__month=month
+    ).values('date', 'comment')
+
+    # Criar um dicionário para acesso rápido às atividades por data
+    atividades_dict = {activity['date']: activity['comment'] for activity in atividades}
+
+    # Estruturar os dias para o template
+    calendar_days = []
+    for week in month_days:
+        week_data = []
+        for day in week:
+            if day == 0: # Dias que não pertencem ao mês
+                week_data.append({'day': '', 'has_activity': False, 'comment': ''})
+            else:
+                current_date = date(year, month, day)
+                has_activity = current_date in atividades_dict
+                comment = atividades_dict.get(current_date, '')
+                week_data.append({
+                    'day': day,
+                    'date': current_date.isoformat(), # Formato YYYY-MM-DD
+                    'has_activity': has_activity,
+                    'comment': comment
+                })
+        calendar_days.append(week_data)
+
+    month_name = calendar.month_name[month]
 
     context = {
-        'positions': positions,
-        'dias': dias,
+        'year': year,
+        'month': month,
+        'month_name': month_name,
+        'calendar_days': calendar_days,
     }
-    
-    return render(request, 'atividades/habitos.html', context)
+    return render(request, 'atividades/calendar_view.html', context)
 
-
-def sono_view(request):
-    return render(request, 'atividades/sono.html')
-
-def destaque_view(request):
-    return render(request, 'atividades/destaque.html')
-
-def filmes_series_view(request):
-    return render(request, 'atividades/filmes_series.html')
-
-def calendario(request):
-    # Cria uma lista para o calendário
-    month = 10  # Outubro
-    year = 2024  # Altere para o ano atual ou desejado
-    cal = calendar.monthcalendar(year, month)
-
-    return render(request, 'atividades/calendario.html', {'calendar': cal})
-
-def salvar_progresso(request):
+# View para salvar a atividade via AJAX
+def save_activity(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        dia = data.get('dia')
-        atividade = data.get('atividade')
-        completado = data.get('completado')
+        date_str = request.POST.get('date')
+        comment = request.POST.get('comment', '').strip()
 
-        progresso, created = ProgressoHabitual.objects.update_or_create(
-            dia=dia, atividade=atividade,
-            defaults={'completado': completado}
-        )
+        try:
+            activity_date = date.fromisoformat(date_str)
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Data inválida.'}, status=400)
 
-        return JsonResponse({'status': 'success'})
-
-    return JsonResponse({'status': 'error'}, status=400)
+        if comment:
+            # Atualiza ou cria a atividade com o comentário
+            DailyActivity.objects.update_or_create(
+                date=activity_date,
+                defaults={'comment': comment}
+            )
+            return JsonResponse({'status': 'success', 'message': 'Comentário salvo com sucesso.'})
+        else:
+            # Se o comentário estiver vazio, remove a atividade para a data
+            DailyActivity.objects.filter(date=activity_date).delete()
+            return JsonResponse({'status': 'success', 'message': 'Comentário removido.'})
+    return JsonResponse({'status': 'error', 'message': 'Método não permitido.'}, status=405)

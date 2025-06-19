@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolha o Mês - {{ year }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        h1 { text-align: center; color: #333; }
+        .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .month-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .month-item a {
+            display: block;
+            width: 100%;
+            padding: 20px 0;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .month-item a:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'atividades:select_year' %}" class="back-link">&leftarrow; Voltar para Escolha do Ano</a>
+        <h1>Escolha o Mês para {{ year }}</h1>
+        <div class="month-grid">
+            {% for month_data in months %}
+                <div class="month-item">
+                    <a href="{% url 'atividades:calendar_view' year=year month=month_data.id %}">
+                        {{ month_data.name }}
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

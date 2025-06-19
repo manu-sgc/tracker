@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('atividades.urls')),
+    path('atividades/', include('atividades.urls')), # Inclua as URLs do seu app
+    path('', include('atividades.urls')), # Para a página inicial ser a seleção de ano
 ]

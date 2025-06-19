@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário de Atividades - {{ month_name }} de {{ year }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .nav-links { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .nav-links a { text-decoration: none; color: #007bff; font-weight: bold; }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .calendar-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .day-cell {
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .day-cell.empty { background-color: #f0f0f0; cursor: default; }
+        .day-cell:not(.empty):hover { background-color: #e6f7ff; }
+        .day-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .activity-comment {
+            font-size: 0.9em;
+            color: #555;
+            word-wrap: break-word;
+            flex-grow: 1; /* Permite que o comentário ocupe o espaço disponível */
+        }
+        .has-activity {
+            background-color: #d4edda !important; /* Mais visível para dias com atividade */
+            border-color: #28a745;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura */
+        }
+        .modal-buttons {
+            text-align: right;
+        }
+        .modal-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .modal-buttons .save-btn { background-color: #007bff; color: white; margin-right: 10px; }
+        .modal-buttons .cancel-btn { background-color: #ccc; color: #333; }
+        .modal-buttons .save-btn:hover { background-color: #0056b3; }
+        .modal-buttons .cancel-btn:hover { background-color: #bbb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="{% url 'atividades:select_month' year=year %}" class="back-link">&leftarrow; Voltar para Escolha do Mês</a>
+            <a href="{% url 'atividades:select_year' %}" class="back-link">Voltar para Escolha do Ano &rightarrow;</a>
+        </div>
+        <h1>{{ month_name }} de {{ year }}</h1>
+
+        <div class="calendar-grid">
+            <div class="calendar-header">Dom</div>
+            <div class="calendar-header">Seg</div>
+            <div class="calendar-header">Ter</div>
+            <div class="calendar-header">Qua</div>
+            <div class="calendar-header">Qui</div>
+            <div class="calendar-header">Sex</div>
+            <div class="calendar-header">Sáb</div>
+
+            {% for week in calendar_days %}
+                {% for day_data in week %}
+                    <div class="day-cell {% if not day_data.day %}empty{% endif %} {% if day_data.has_activity %}has-activity{% endif %}"
+                         data-date="{{ day_data.date }}"
+                         data-comment="{{ day_data.comment }}"
+                         {% if day_data.day %}data-day-number="{{ day_data.day }}"{% endif %}
+                    >
+                        {% if day_data.day %}
+                            <div class="day-number">{{ day_data.day }}</div>
+                            <div class="activity-comment">{{ day_data.comment }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="activityModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Atividade para <span id="modalDate"></span></h2>
+            <textarea id="activityComment" placeholder="Digite seu comentário aqui..."></textarea>
+            <div class="modal-buttons">
+                <button class="save-btn" id="saveActivityBtn">Salvar</button>
+                <button class="cancel-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dayCells = document.querySelectorAll('.day-cell:not(.empty)');
+            const modal = document.getElementById('activityModal');
+            const closeButton = modal.querySelector('.close-button');
+            const cancelButton = modal.querySelector('.cancel-btn');
+            const saveButton = document.getElementById('saveActivityBtn');
+            const modalDateSpan = document.getElementById('modalDate');
+            const activityCommentTextarea = document.getElementById('activityComment');
+
+            let currentSelectedDate = null; // Para armazenar a data do dia selecionado
+
+            dayCells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    currentSelectedDate = this.dataset.date;
+                    const dayNumber = this.dataset.dayNumber;
+                    const existingComment = this.dataset.comment || '';
+
+                    // Formatar a data para exibição no modal
+                    const dateParts = currentSelectedDate.split('-');
+                    const displayDate = `${dayNumber}/${dateParts[1]}/${dateParts[0]}`;
+
+                    modalDateSpan.textContent = displayDate;
+                    activityCommentTextarea.value = existingComment;
+                    modal.style.display = 'flex'; // Exibe o modal como flex para centralizar
+                });
+            });
+
+            closeButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            cancelButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            saveButton.addEventListener('click', function() {
+                const comment = activityCommentTextarea.value.trim();
+                const csrfToken = '{{ csrf_token }}'; // Django CSRF token
+
+                if (currentSelectedDate) {
+                    fetch('{% url "atividades:save_activity" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: `date=${currentSelectedDate}&comment=${encodeURIComponent(comment)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            // Atualiza o comentário na célula do calendário
+                            const cellToUpdate = document.querySelector(`.day-cell[data-date="${currentSelectedDate}"]`);
+                            if (cellToUpdate) {
+                                const commentDiv = cellToUpdate.querySelector('.activity-comment');
+                                commentDiv.textContent = comment;
+                                cellToUpdate.dataset.comment = comment; // Atualiza o dataset para futuras aberturas do modal
+
+                                if (comment) {
+                                    cellToUpdate.classList.add('has-activity');
+                                } else {
+                                    cellToUpdate.classList.remove('has-activity');
+                                }
+                            }
+                            modal.style.display = 'none';
+                        } else {
+                            alert('Erro ao salvar: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro na requisição:', error);
+                        alert('Ocorreu um erro ao tentar salvar a atividade.');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,14 +1,11 @@
 from django.urls import path
 from . import views
-from .views import calendario
+
+app_name = 'atividades' # Define um namespace para suas URLs
 
 urlpatterns = [
-    path('', views.tracker_view, name='tracker'),
-    path('calendario/', calendario, name='calendario'),
-    path('avaliacao/', views.avaliacao_view, name='avaliacao'),
-    path('leitura/', views.leitura_view, name='leitura'),
-    path('habitos/', views.habitos_view, name='habitos'),
-    path('salvar-progresso/', views.salvar_progresso, name='salvar-progresso'),
-    path('sono/', views.sono_view, name='sono'),
-    path('filmes_series/', views.filmes_series_view, name='filmes_series'),
+    path('', views.select_year, name='select_year'),
+    path('<int:year>/', views.select_month, name='select_month'),
+    path('<int:year>/<int:month>/', views.calendar_view, name='calendar_view'),
+    path('save_activity/', views.save_activity, name='save_activity'), # Para salvar as atividades
 ]

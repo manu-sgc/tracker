@@ -56,7 +56,7 @@ ROOT_URLCONF = 'tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # Adicione esta linha se você tiver templates no diretório raiz do projeto
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

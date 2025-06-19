@@ -1,18 +1,15 @@
 from django.db import models
+from django.utils import timezone
 
-class Dia(models.Model):
-    data = models.DateField()
-    avaliacao = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
-    paginas_lidas = models.IntegerField()
-    atividades = models.CharField(max_length=255)
-    habitos = models.CharField(max_length=255)
-    horas_de_sono = models.CharField(max_length=255)
-    filmes_series = models.TextField()
-
-class ProgressoHabitual(models.Model):
-    dia = models.IntegerField()
-    atividade = models.CharField(max_length=100)
-    completado = models.BooleanField(default=False)
+class DailyActivity(models.Model):
+    date = models.DateField(unique=True)
+    comment = models.TextField(blank=True, null=True)
+    # Você pode adicionar mais campos aqui, como tipo de atividade, status, etc.
 
     def __str__(self):
-        return f'{self.dia} - {self.atividade} - {"Completado" if self.completado else "Não completado"}'
+        return f"Activity for {self.date.strftime('%Y-%m-%d')}"
+
+    class Meta:
+        verbose_name = "Atividade Diária"
+        verbose_name_plural = "Atividades Diárias"
+        ordering = ['date'] # Ordena as atividades por data
