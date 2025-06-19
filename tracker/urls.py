@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from atividades import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('atividades/', include('atividades.urls')), # Inclua as URLs do seu app
-    path('', include('atividades.urls')), # Para a página inicial ser a seleção de ano
+    path('', views.select_year, name='select_year_root'), 
+    path('atividades/', include('atividades.urls', namespace='atividades')),
 ]

@@ -4,50 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escolha o Mês - {{ year }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        h1 { text-align: center; color: #333; }
-        .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
+        body {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+        }
+        .container {
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
+        h1 {
+            color: #28a745; /* Cor verde para destaque do mês */
+            margin-bottom: 30px;
+            text-align: center;
+        }
         .month-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Ajuste o minmax conforme preferir */
             gap: 15px;
             margin-top: 20px;
         }
-        .month-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
         .month-item a {
-            display: block;
-            width: 100%;
             padding: 20px 0;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
             font-size: 1.1em;
-            transition: background-color 0.3s ease;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .month-item a:hover { background-color: #218838; }
+        .month-item a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'atividades:select_year' %}" class="back-link">&leftarrow; Voltar para Escolha do Ano</a>
+        <a href="{% url 'atividades:select_year' %}" class="btn btn-outline-secondary mb-4">&leftarrow; Voltar para Escolha do Ano</a>
         <h1>Escolha o Mês para {{ year }}</h1>
         <div class="month-grid">
             {% for month_data in months %}
                 <div class="month-item">
-                    <a href="{% url 'atividades:calendar_view' year=year month=month_data.id %}">
+                    <a href="{% url 'atividades:calendar_view' year=year month=month_data.id %}" class="btn btn-success w-100">
                         {{ month_data.name }}
                     </a>
                 </div>
             {% endfor %}
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
