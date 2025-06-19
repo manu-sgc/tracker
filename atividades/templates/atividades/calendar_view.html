@@ -7,67 +7,203 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        body { background-color: #f8f9fa; padding: 30px 0; }
-        .container { max-width: 960px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
-        h1 { text-align: center; color: #007bff; margin-bottom: 30px; }
-        .nav-links { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #8e2de2, #4a00e0); /* Mesmo gradiente */
+            /* Removemos display: flex, justify-content, align-items para que o body ocupe a página toda */
+            min-height: 100vh; /* Ainda ocupa a altura total da viewport */
+            margin: 0;
+            color: #fff;
+            padding: 20px; /* Adiciona um padding geral ao body para evitar que o conteúdo encoste nas bordas */
+        }
+        .container {
+            max-width: 1300px; /* Aumenta a largura máxima para ocupar mais espaço */
+            width: 100%; /* Garante que ele use a largura máxima disponível */
+            padding: 40px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-left: auto; /* Centraliza o container */
+            margin-right: auto;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .nav-links .btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .nav-links .btn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            background-color: #e9ecef;
-            border-radius: 8px;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             overflow: hidden;
+            padding: 5px;
         }
         .calendar-header {
-            background-color: #6c757d;
-            color: white;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
             font-weight: bold;
             text-align: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.1em;
         }
         .day-cell {
-            border: 1px solid #dee2e6;
-            padding: 10px;
-            min-height: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            min-height: 140px;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Coloca os itens em coluna por padrão */
             justify-content: space-between;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
             cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
             position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
-        .day-cell.empty { background-color: #f0f2f5; cursor: default; opacity: 0.7; }
-        .day-cell:not(.empty):hover { background-color: #e2f2ff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .day-number { font-weight: bold; font-size: 1.2em; color: #343a40; margin-bottom: 8px; }
-        .mood-text { font-size: 0.9em; font-weight: bold; }
-        .comment-snippet { font-size: 0.8em; color: #6c757d; max-height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* Snippet do comentário */
-
-        /* Cores para o humor */
-        .mood-1 { background-color: #dc3545 !important; color: white; } /* Vermelho - Péssimo */
-        .mood-2 { background-color: #ffc107 !important; color: #343a40; } /* Amarelo - Ruim */
-        .mood-3 { background-color: #6c757d !important; color: white; } /* Cinza - Neutro */
-        .mood-4 { background-color: #28a745 !important; color: white; } /* Verde - Bom */
-        .mood-5 { background-color: #007bff !important; color: white; } /* Azul - Excelente */
+        .day-cell.empty { background-color: rgba(0, 0, 0, 0.1); cursor: default; opacity: 0.5; }
+        .day-cell:not(.empty):hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform: translateY(-3px);
+        }
         
-        .mood-1 .day-number, .mood-2 .day-number, .mood-3 .day-number, .mood-4 .day-number, .mood-5 .day-number { color: inherit; } /* Garante que o número do dia herde a cor */
-        .mood-1 .comment-snippet, .mood-2 .comment-snippet, .mood-3 .comment-snippet, .mood-4 .comment-snippet, .mood-5 .comment-snippet { color: inherit; opacity: 0.9; }
+        /* Ajuste para o número do dia e humor lado a lado */
+        .day-header-content {
+            display: flex;
+            align-items: center; /* Alinha verticalmente */
+            justify-content: flex-start; /* Alinha à esquerda */
+            margin-bottom: 5px; /* Espaço entre o cabeçalho do dia e o comentário */
+            gap: 8px; /* Espaço entre o número e o humor */
+        }
+        .day-number {
+            font-weight: bold;
+            font-size: 1.5em;
+            color: inherit;
+            margin-bottom: 0; /* Remove margin-bottom que estava conflitando */
+        }
+        .mood-text {
+            font-size: 1em;
+            font-weight: bold;
+            color: inherit;
+            white-space: nowrap; /* Impede que o texto do humor quebre linha */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .comment-snippet {
+            font-size: 0.85em;
+            color: inherit;
+            opacity: 0.8;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            margin-top: 5px;
+        }
+
+        /* Cores para o humor (adaptadas para o novo esquema) */
+        .mood-1 { background-color: #4169E1 !important; } /* Vermelho Escuro / Borgonha (Péssimo) */
+        .mood-2 { background-color: #00BFFF !important; } /* Roxo (Ruim) */
+        .mood-3 { background-color: #A020F0 !important; } /* Azul Celeste (Neutro) */
+        .mood-4 { background-color: #c25555 !important; } /* Azul Royal (Bom) */
+        .mood-5 { background-color: #DA70D6 !important; } /* Orquídea / Roxo Claro (Excelente) */
+        
+        /* Garantir que todos os textos dentro das células coloridas mantenham a cor branca por padrão */
+        .mood-1 .day-number, .mood-2 .day-number, .mood-3 .day-number, .mood-4 .day-number, .mood-5 .day-number,
+        .mood-1 .mood-text, .mood-2 .mood-text, .mood-3 .mood-text, .mood-4 .mood-text, .mood-5 .mood-text,
+        .mood-1 .comment-snippet, .mood-2 .comment-snippet, .mood-3 .comment-snippet, .mood-4 .comment-snippet, .mood-5 .comment-snippet {
+            color: white !important; /* Força texto branco para todas as células de humor */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* Adiciona sombra para melhor legibilidade em cores claras */
+        }
 
         /* Estilos do Modal */
-        #activityModal .modal-header { background-color: #007bff; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom: none; }
+        #activityModal .modal-content {
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #343a40;
+        }
+        #activityModal .modal-header {
+            background-color: #4a00e0;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border-bottom: none;
+            padding: 20px;
+        }
         #activityModal .modal-header .btn-close { filter: invert(1); }
-        #activityModal .modal-body textarea { min-height: 120px; border-radius: 5px; }
-        #activityModal .modal-footer { border-top: none; padding-top: 0; }
+        #activityModal .modal-body { padding: 25px; }
+        #activityModal .modal-body label { font-weight: bold; }
+        #activityModal .modal-body textarea,
+        #activityModal .modal-body select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        #activityModal .modal-footer {
+            border-top: none;
+            padding: 20px 25px;
+        }
+        #activityModal .modal-footer .btn-primary {
+            background-color: #4a00e0;
+            border-color: #4a00e0;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        #activityModal .modal-footer .btn-primary:hover {
+            background-color: #6a1bb8;
+            transform: translateY(-1px);
+        }
+        #activityModal .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        #activityModal .modal-footer .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
     {% csrf_token %}
     <div class="container">
         <div class="nav-links">
-            <a href="{% url 'atividades:select_month' year=year %}" class="btn btn-outline-secondary">&leftarrow; Voltar para Escolha do Mês</a>
-            <a href="{% url 'atividades:select_year' %}" class="btn btn-outline-secondary">Voltar para Escolha do Ano &rightarrow;</a>
+            <a href="{% url 'atividades:select_month' year=year %}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Voltar para Escolha do Mês</a>
+            <a href="{% url 'atividades:select_year' %}" class="btn btn-primary">Voltar para Escolha do Ano <i class="fas fa-arrow-right"></i></a>
         </div>
         <h1>{{ month_name }} de {{ year }}</h1>
 
@@ -85,14 +221,15 @@
                          {% if day_data.day %}data-day-number="{{ day_data.day }}"{% endif %}
                     >
                         {% if day_data.day %}
-                            <div class="day-number">{{ day_data.day }}</div>
-                            {% if day_data.mood_rating %}
-                                <div class="mood-text">
-                                    {% for value, label in mood_choices %}
-                                        {% if value == day_data.mood_rating %}{{ label }}{% endif %}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                            <div class="day-header-content"> <div class="day-number">{{ day_data.day }}</div>
+                                {% if day_data.mood_rating %}
+                                    <div class="mood-text">
+                                        {% for value, label in mood_choices %}
+                                            {% if value == day_data.mood_rating %}{{ label }}{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                             {% if day_data.comment %}
                                 <div class="comment-snippet">{{ day_data.comment }}</div>
                             {% endif %}
@@ -143,7 +280,7 @@
             const dailyCommentTextarea = document.getElementById('dailyComment');
             const saveMoodBtn = document.getElementById('saveMoodBtn');
 
-            let currentSelectedDate = null; // Data do dia clicado
+            let currentSelectedDate = null;
 
             dayCells.forEach(cell => {
                 cell.addEventListener('click', function() {
@@ -156,8 +293,8 @@
                     const displayDate = `${dayNumber}/${dateParts[1]}/${dateParts[0]}`;
 
                     modalDateSpan.textContent = displayDate;
-                    moodRatingSelect.value = existingMood || ''; // Seleciona o humor existente
-                    dailyCommentTextarea.value = existingComment || ''; // Preenche o comentário
+                    moodRatingSelect.value = existingMood || '';
+                    dailyCommentTextarea.value = existingComment || '';
                     modal.show();
                 });
             });
@@ -165,7 +302,7 @@
             saveMoodBtn.addEventListener('click', function() {
                 const moodRating = moodRatingSelect.value;
                 const comment = dailyCommentTextarea.value.trim();
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Melhor forma de pegar o CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
                 fetch('{% url "atividades:save_daily_activity" %}', {
                     method: 'POST',
@@ -175,48 +312,50 @@
                     },
                     body: `date=${currentSelectedDate}&mood_rating=${moodRating}&comment=${encodeURIComponent(comment)}`
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Network response was not ok', response.statusText);
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.status === 'success') {
                         const cellToUpdate = document.querySelector(`.day-cell[data-date="${currentSelectedDate}"]`);
                         if (cellToUpdate) {
-                            // Limpa classes de humor antigas
                             for (let i = 1; i <= 5; i++) {
                                 cellToUpdate.classList.remove(`mood-${i}`);
                             }
-                            // Adiciona a nova classe de humor se houver um rating
                             if (data.mood_rating) {
                                 cellToUpdate.classList.add(`mood-${data.mood_rating}`);
                             }
-                            cellToUpdate.dataset.moodRating = data.mood_rating; // Atualiza o dataset
-                            cellToUpdate.dataset.comment = comment; // Atualiza o dataset do comentário
+                            cellToUpdate.dataset.moodRating = data.mood_rating;
+                            cellToUpdate.dataset.comment = comment;
 
                             // Atualiza o texto do humor na célula
-                            const moodTextDiv = cellToUpdate.querySelector('.mood-text');
-                            if (moodTextDiv) {
-                                if (data.mood_rating) {
-                                    const selectedOption = moodRatingSelect.options[moodRatingSelect.selectedIndex];
-                                    moodTextDiv.textContent = selectedOption.textContent;
-                                } else {
-                                    moodTextDiv.textContent = '';
-                                }
-                            } else if (data.mood_rating) { // Cria o elemento se não existir
-                                const newMoodTextDiv = document.createElement('div');
-                                newMoodTextDiv.classList.add('mood-text');
-                                const selectedOption = moodRatingSelect.options[moodRatingSelect.selectedIndex];
-                                newMoodTextDiv.textContent = selectedOption.textContent;
-                                cellToUpdate.insertBefore(newMoodTextDiv, cellToUpdate.querySelector('.comment-snippet') || null);
+                            let moodTextDiv = cellToUpdate.querySelector('.mood-text'); // Use 'let' para reatribuir
+                            if (!moodTextDiv) { // Se não existe, cria
+                                moodTextDiv = document.createElement('div');
+                                moodTextDiv.classList.add('mood-text');
+                                // Prepend (adiciona antes) o newMoodTextDiv ao day-header-content
+                                cellToUpdate.querySelector('.day-header-content').appendChild(moodTextDiv); 
                             }
-
+                            if (data.mood_rating) {
+                                const selectedOption = moodRatingSelect.options[moodRatingSelect.selectedIndex];
+                                moodTextDiv.textContent = selectedOption.textContent;
+                            } else {
+                                moodTextDiv.textContent = ''; // Limpa se não tiver humor
+                            }
+                            
                             // Atualiza o snippet do comentário na célula
-                            let commentSnippetDiv = cellToUpdate.querySelector('.comment-snippet');
-                            if (commentSnippetDiv) {
-                                commentSnippetDiv.textContent = comment;
-                            } else if (comment) { // Cria o elemento se não existir
+                            let commentSnippetDiv = cellToUpdate.querySelector('.comment-snippet'); // Use 'let'
+                            if (!commentSnippetDiv && comment) { // Se não existe e tem comentário, cria
                                 commentSnippetDiv = document.createElement('div');
                                 commentSnippetDiv.classList.add('comment-snippet');
-                                commentSnippetDiv.textContent = comment;
                                 cellToUpdate.appendChild(commentSnippetDiv);
+                            }
+                            if (commentSnippetDiv) { // Garante que existe antes de setar o texto
+                                commentSnippetDiv.textContent = comment;
                             }
                         }
                         modal.hide();
@@ -225,8 +364,8 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro na requisição:', error);
-                    alert('Ocorreu um erro ao tentar salvar o humor.');
+                    console.error('Erro na requisição ou parsing JSON:', error);
+                    alert('Ocorreu um erro ao tentar salvar o humor. Verifique o console para detalhes.');
                 });
             });
         });
